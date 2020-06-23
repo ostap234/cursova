@@ -1,0 +1,73 @@
+CREATE DATABASE build_supermarket; \\створюємо базу даних
+
+USE build_supermarket; \\обираємо її, щоб робити з нею якісь операції
+
+CREATE TABLE shop( \\створюємо першу таблицю "магазин"
+    -> shop_id INT AUTO_INCREMENT PRIMARY KEY, \\ID магазину (первинний інкрементуючий ключ)
+    -> name VARCHAR(30), \\тип VARCHAR використовується для стрічкових полів, які ми прописуємо в лапках ''
+    -> address VARCHAR(30), \\.. в дужках 30 означає, що ми даємо можливість вмістити в стрічку до 30 знаків
+    -> assortment_amount INT); \\значення INT використовується для полів, в яких ми записуємо числа без лапок
+
+INSERT INTO shop VALUES(NULL, 'ForReallyMens', 'Lviv, Shevchenka str.', 10000); \\заповняємо таблицю даними
+INSERT INTO shop VALUES(NULL, 'SamSobiHospodar', 'Lviv, Vyhovskogo str.', 15000); \\..NULL вписуємо там, де працює інкремент
+ INSERT INTO shop VALUES(NULL, 'VseDlyaRemontu', 'Lviv, Shota Rustaveli str.', 5000);
+
+CREATE TABLE client( \\таблиця з даними про клієнта, яки відвідує магазин
+    -> client_id INT AUTO_INCREMENT PRIMARY KEY,
+    -> last_name VARCHAR(30),
+    -> phone_number INT,
+    -> bomus_card INT,
+    -> shop_id INT, \\починаючи з цього рядка ми вказуємо тут магазин, в якому наш клієнт здійснює покупку
+    -> FOREIGN KEY (shop_id) REFERENCES shop (shop_id)); \\..(продовження попереднього рядка).. це наш зовнішній ключ, яким ми зв'язуємо дві таблиці "магазин" і "клієнт"
+
+INSERT INTO client VALUES (NULL, 'Karpenko Volodymyr', 56789340, 10021, 1); \\останні дані, які прописуємо далі в кожному з цих 6 рядків - це наш ідентифікатор зовнішнього ключа
+INSERT INTO client VALUES (NULL, 'Vasyliev Dmytro', 54732894, 56032, 3);
+INSERT INTO client VALUES (NULL, 'Panchyn Vladyslav', 56782329, 23202, 2);
+INSERT INTO client VALUES (NULL, 'Gladysh Ivan', 55327894, 23256, 2);
+INSERT INTO client VALUES (NULL, 'Lybkiv Gennadiy', 54548591, 56021, 3);
+INSERT INTO client VALUES (NULL, 'Kulykovskiy Stepan', 56782392, 10034, 1);
+
+CREATE TABLE assortment( \\таблиця "асортимент", в якій маємо інформацію про деякий товар
+    -> article_id INT AUTO_INCREMENT PRIMARY KEY,
+    -> name VARCHAR(30),
+    -> appointment VARCHAR(30),
+    -> quality VARCHAR(30),
+    -> country_producer VARCHAR(30),
+    -> price INT,
+    -> shop_id INT, \\так само надаємо зв'язуємо цю таблицю з "магазином" зовнішнім ключем
+    -> FOREIGN KEY (shop_id) REFERENCES shop (shop_id));
+
+INSERT INTO assortment VALUES (NULL, 'glue', 'for floor', '100%', 'Ukraine', 150, 1); \\заповняємо таблицю даними
+INSERT INTO assortment VALUES (NULL, 'screwdriver', 'for screws', '70%', 'Poland', 95, 2);
+INSERT INTO assortment VALUES (NULL, 'perforator', 'for walls', '100%', 'Germany', 2500, 2);
+INSERT INTO assortment VALUES (NULL, 'switch', 'for light', '60%', 'China', 50, 3);
+INSERT INTO assortment VALUES (NULL, 'nails', 'for wood', '90%', 'Ukraine', 70, 3);
+INSERT INTO assortment VALUES (NULL, 'hammer', 'for big nails', '100%', 'Poland', 120, 1);
+INSERT INTO assortment VALUES (NULL, 'shovel', 'for gardening', '70%', 'Ukraine', 155, 2);
+INSERT INTO assortment VALUES (NULL, 'ax', 'for woods', '100%', 'Poland', 700, 1);
+INSERT INTO assortment VALUES (NULL, 'lazer level', 'for levelling', '100%', 'Germany', 4000, 3)
+INSERT INTO assortment VALUES (NULL, 'drill', 'for beton', '90%', 'Ukraine', 250, 1);
+
+CREATE TABLE bill( \\таблиця "рахунок"
+    -> bill_id INT AUTO_INCREMENT PRIMARY KEY,
+    -> article_id INT, \\зв'язуємо з "асортиментом" зовнішнім ключем
+    -> FOREIGN KEY (article_id) REFERENCES assortment (article_id), 
+    -> sum_to_pay INT,
+    -> payment_way VARCHAR(30),
+    -> client_id INT, \\зв'язуємо з "клієнтом" зовнішнім ключем
+    -> FOREIGN KEY (client_id) REFERENCES client (client_id));
+
+INSERT INTO bill VALUES (NULL, 3, (SELECT price FROM assortment WHERE article_id=3), 'by card', 4);
+INSERT INTO bill VALUES (NULL, 1, (SELECT price FROM assortment WHERE article_id=1), 'by card', 1);
+INSERT INTO bill VALUES (NULL, 9, (SELECT price FROM assortment WHERE article_id=9), 'in cash', 6);
+INSERT INTO bill VALUES (NULL, 4, (SELECT price FROM assortment WHERE article_id=4), 'in cash', 2);
+INSERT INTO bill VALUES (NULL, 10, (SELECT price FROM assortment WHERE article_id=10), 'in cash', 3);
+\\тут SELECT в кожному рядку дає нам можливість в нашій таблиці отримати відповідне значення ціни товару із таблиці "асортимент"
+
+SELECT * FROM shop;
+SELECT * FROM client;
+SELECT * FROM assortment;
+SELECT * FROM bill;
+\\тут SELECT використовуємо для того, що вивести готові таблиці
+
+В принципі питань виникнути в тебе не має. Все, дійсно, дуже просто. Ти бачиш тут зразок, як заповняти таблиці, якщо б тобі часом було мало тих даних. Але в принципі, я думаю, того має вистачити. Головне, що все між собою пов'язується гарно.
